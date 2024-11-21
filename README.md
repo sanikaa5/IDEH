@@ -1,5 +1,8 @@
 # IDEH
 
+Here is the combined `README.md` content in one file. You can copy and paste this into your `README.md` file directly:
+
+```markdown
 # Flask Application with PostgreSQL, LangChain, and Social Login
 
 ## Overview
@@ -14,87 +17,44 @@ Before running the application, ensure you have the following:
 ## Installation
 To set up the project:
 
-```bash
 1. Clone the Repository  
    Clone this repository to your local machine:  
+   ```bash
    git clone https://github.com/yourusername/your-repository.git  
-   cd your-repository  
+   cd your-repository
+   ```
 
 2. Set Up Virtual Environment  
    Create and activate a virtual environment:  
+   ```bash
    python3 -m venv venv  
    source venv/bin/activate  # On Windows, use venv\Scripts\activate  
+   ```
 
 3. Install Dependencies  
    Install the required Python packages:  
+   ```bash
    pip install -r requirements.txt  
+   ```
 
 4. Configure Environment Variables  
    Create a `.env` file in the root of the project and add the following configuration:  
+   ```bash
    DATABASE_URL=postgresql://username:password@localhost/dbname  
    SECRET_KEY=your_secret_key  
    GOOGLE_CLIENT_ID=your_google_client_id  
    GOOGLE_CLIENT_SECRET=your_google_client_secret  
+   ```
 
 5. Set Up PostgreSQL Database  
    Make sure you have PostgreSQL installed and create a database named `yourdb` or configure it as per your `.env` settings.
 
 6. Run the Application  
    Run the Flask development server:  
+   ```bash
    python app.py  
-   The app should now be accessible at http://localhost:5000.
-
-
-Here’s the entire README content in a single code block that you can copy and paste directly into your file:
-
-```markdown
-# Flask Web App
-
-This is a Flask web application with PostgreSQL integration, web scraping, and prompt-based interactions using LangChain. It also includes Docker setup for easy deployment.
-
-## Table of Contents
-1. [Setup Virtual Environment](#setup-virtual-environment)
-2. [Install Dependencies](#install-dependencies)
-3. [Configure Environment Variables](#configure-environment-variables)
-4. [Set Up PostgreSQL Database](#set-up-postgresql-database)
-5. [Run the Application](#run-the-application)
-6. [Docker (Optional)](#docker-optional)
-7. [API Endpoints](#api-endpoints)
-8. [Testing](#testing)
-9. [License](#license)
-10. [Acknowledgements](#acknowledgements)
-
-## Setup Virtual Environment
-Create and activate a virtual environment:
-```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows, use venv\Scripts\activate
-```
-
-## Install Dependencies
-Install the required Python packages:
-```bash
-pip install -r requirements.txt
-```
-
-## Configure Environment Variables
-Create a `.env` file in the root of the project and add the following configuration:
-```bash
-DATABASE_URL=postgresql://username:password@localhost/dbname
-SECRET_KEY=your_secret_key
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-```
-
-## Set Up PostgreSQL Database
-Ensure PostgreSQL is installed. Create a database named `yourdb` or configure the database settings as per the `.env` file.
-
-## Run the Application
-Run the Flask development server:
-```bash
-python app.py
-```
-The app should now be accessible at [http://localhost:5000](http://localhost:5000).
+   ```  
+   The app should now be accessible at [http://localhost:5000](http://localhost:5000).
 
 ## Docker (Optional)
 If you prefer to run the app with Docker, follow these steps:
@@ -155,13 +115,4 @@ pytest
 ## License
 This project is licensed under the MIT License.
 
-## Acknowledgements
-- Flask for the web framework
-- Flask-SQLAlchemy for database integration
-- Flask-Dance for social login support
-- LangChain for prompt-based interactions
-- BeautifulSoup4 for web scraping
-```
-
-Just copy and paste this into your `README.md` file!
 
