@@ -14,46 +14,40 @@ Before running the application, ensure you have the following:
 - PostgreSQL
 - Docker (optional, for containerization)
 
-## File Explanations
+# Project Structure & File Descriptions
 
-### `config/config.py`
-Contains configuration settings for the application, including the database URI, secret key, and other environment variables like OAuth credentials for Google login.
+## Root Files
 
 ### `app.py`
-Main entry point for the Flask application. It sets up the app, integrates various modules, and runs the Flask development server.
+Main Flask application that handles routes, database connection, and integrates LangChain and OAuth login.
 
-### `requirements.txt`
-Lists all the Python dependencies needed to run the application. This includes packages like Flask, Flask-SQLAlchemy, Flask-Dance, LangChain, and BeautifulSoup.
-
-### `models.py` (within `modules/web_application/models/`)
-Defines the database models using Flask-SQLAlchemy. Includes `User`, `ScrapedData`, and `PromptLog` models for user management, web scraping, and prompt logging.
-
-### `forms.py` (within `modules/web_application/forms/`)
-Contains the forms for handling user inputs, such as for scraping URLs or submitting prompts for LangChain interaction.
-
-### `views.py` (within `modules/web_application/views/`)
-Handles the routes for the web application, such as displaying the dashboard, processing user login, performing web scraping, and generating responses from LangChain.
-
-### `templates/`
-Contains HTML templates that are rendered by the Flask views. Includes templates for the dashboard, login page, and other views.
-
-### `static/`
-Holds static files like CSS, JavaScript, and images used by the application. It's where you place frontend assets like Bootstrap styles.
+### `config.py`
+Contains configuration settings for the Flask app, loading sensitive environment variables such as database URL and API keys.
 
 ### `.env`
-Stores environment variables, such as database credentials and OAuth keys, to secure sensitive information.
+Stores environment variables (e.g., database credentials, API keys) used by the application.
+
+### `.gitignore`
+Specifies files and directories to exclude from Git version control, such as `.env` and the `venv` directory.
+
+## Docker Configuration
 
 ### `Dockerfile`
-Defines how the application container should be built using Docker. It specifies the base image, dependencies, and commands to run the app in a containerized environment.
+Defines how to containerize the Flask app, install dependencies, and run the app within a Docker container.
 
 ### `docker-compose.yml`
-Defines the services (such as the Flask app and PostgreSQL) and how they interact in a Docker environment. It's used for setting up and running the application in a containerized environment.
+Configures multi-container Docker setup for Flask and PostgreSQL, including environment variables and dependencies.
 
-### `tests/`
-Contains unit tests for various functionalities, like user login, web scraping, and LangChain prompt generation.
+## Additional Files
 
 ### `README.md`
-This file contains instructions on how to set up, run, and use the application. It explains dependencies, configuration, API endpoints, and testing.
+Project documentation, including setup instructions, usage guide, and API details.
+
+### `requirements.txt`
+List of Python dependencies required for the project.
+
+### `LICENSE`
+The open-source license for the project.
 
 
 ## Installation
