@@ -1,7 +1,5 @@
 # IDEH
 
-Here is the combined `README.md` content in one file. You can copy and paste this into your `README.md` file directly:
-
 ```markdown
 # Flask Application with PostgreSQL, LangChain, and Social Login
 
