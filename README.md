@@ -1,152 +1,154 @@
-# IDEH
 
-```markdown
-# Flask Application with PostgreSQL, LangChain, and Social Login
+# Web Scraping and Social Login Flask App
 
-## Overview
-This is a Flask web application that integrates PostgreSQL with Flask-SQLAlchemy, provides social login using Google OAuth, implements LangChain for prompt-based interactions, and includes a web scraping feature. Key features include PostgreSQL integration for data storage, Google OAuth authentication via Flask-Dance, web scraping, LangChain for prompt-based responses, and CRUD APIs for scraped data and prompts. The app is also containerized using Docker.
+This project is a web scraping Flask application that allows users to log in via Google OAuth, scrape content from URLs, and manage their scraped data through a dashboard. It stores scraped data and user logs in a PostgreSQL database and provides an intuitive web interface for users to interact with their data.
+
+## Features
+
+- **Social Login**: Users can log in via Google OAuth.
+- **Web Scraping**: Users can enter a URL to scrape content such as text, metadata (title, description), and more.
+- **User Dashboard**: Users can view, edit, and delete their scraped data and prompts.
+- **Database**: Scraped data, user profiles, and prompt logs are stored in a PostgreSQL database.
+- **Frontend**: A responsive dashboard with Bootstrap for managing scraped content.
+
+## Technologies Used
+
+- **Flask**: A Python web framework for building the app.
+- **Flask-SQLAlchemy**: ORM for managing PostgreSQL database interactions.
+- **Flask-Dance**: Used for Google OAuth integration.
+- **Flask-Login**: For managing user sessions and authentication.
+- **BeautifulSoup**: For web scraping content from URLs.
+- **PostgreSQL**: Database for storing user data and scraped content.
+- **Bootstrap**: For styling the frontend.
 
 ## Prerequisites
-Before running the application, ensure you have the following:
-- Python 3.x
-- PostgreSQL
-- Docker (optional, for containerization)
 
-# Project Structure & File Descriptions
+Before running the app, make sure you have the following:
 
-## Root Files
+1. Python 3.x installed
+2. Docker and Docker Compose (for easy deployment)
+3. PostgreSQL database setup (handled through Docker Compose)
 
-### `app.py`
-Main Flask application that handles routes, database connection, and integrates LangChain and OAuth login.
+### Required Python Libraries
 
-### `config.py`
-Contains configuration settings for the Flask app, loading sensitive environment variables such as database URL and API keys.
+You can install the necessary Python libraries by running:
 
-### `.env`
-Stores environment variables (e.g., database credentials, API keys) used by the application.
-
-### `.gitignore`
-Specifies files and directories to exclude from Git version control, such as `.env` and the `venv` directory.
-
-## Docker Configuration
-
-### `Dockerfile`
-Defines how to containerize the Flask app, install dependencies, and run the app within a Docker container.
-
-### `docker-compose.yml`
-Configures multi-container Docker setup for Flask and PostgreSQL, including environment variables and dependencies.
-
-## Additional Files
-
-### `README.md`
-Project documentation, including setup instructions, usage guide, and API details.
-
-### `requirements.txt`
-List of Python dependencies required for the project.
-
-### `LICENSE`
-The open-source license for the project.
-
-
-## Installation
-To set up the project:
-
-1. Clone the Repository  
-   Clone this repository to your local machine:  
-   ```bash
-   git clone https://github.com/yourusername/your-repository.git  
-   cd your-repository
-   ```
-
-2. Set Up Virtual Environment  
-   Create and activate a virtual environment:  
-   ```bash
-   python3 -m venv venv  
-   source venv/bin/activate  # On Windows, use venv\Scripts\activate  
-   ```
-
-3. Install Dependencies  
-   Install the required Python packages:  
-   ```bash
-   pip install -r requirements.txt  
-   ```
-
-4. Configure Environment Variables  
-   Create a `.env` file in the root of the project and add the following configuration:  
-   ```bash
-   DATABASE_URL=postgresql://username:password@localhost/dbname  
-   SECRET_KEY=your_secret_key  
-   GOOGLE_CLIENT_ID=your_google_client_id  
-   GOOGLE_CLIENT_SECRET=your_google_client_secret  
-   ```
-
-5. Set Up PostgreSQL Database  
-   Make sure you have PostgreSQL installed and create a database named `yourdb` or configure it as per your `.env` settings.
-
-6. Run the Application  
-   Run the Flask development server:  
-   ```bash
-   python app.py  
-   ```  
-   The app should now be accessible at [http://localhost:5000](http://localhost:5000).
-
-## Docker (Optional)
-If you prefer to run the app with Docker, follow these steps:
-
-### 1. Build Docker Image
 ```bash
-docker build -t flask-app .
+pip install -r requirements.txt
 ```
 
-### 2. Run Docker Container
+The `requirements.txt` file contains the following:
+
+```
+Flask==2.3.0
+Flask-SQLAlchemy==3.0.0
+Flask-Dance==5.0.0
+Flask-Login==0.6.2
+requests==2.28.1
+beautifulsoup4==4.12.0
+langchain==0.0.2
+psycopg2==2.9.3
+python-dotenv==0.19.2
+```
+
+## Environment Variables
+
+Create a `.env` file in the root of the project and add the following variables:
+
+```
+DATABASE_URL=postgresql://username:password@db:5432/yourdb
+SECRET_KEY=your_secret_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
+
+Make sure to replace the placeholder values with your actual credentials and secrets.
+
+## Running the App
+
+### 1. **Set Up Docker**
+
+You can use Docker to run the app and its PostgreSQL database. Ensure Docker and Docker Compose are installed, then run:
+
 ```bash
-docker-compose up
-```
-The app will be accessible at [http://localhost:5000](http://localhost:5000).
-
-## API Endpoints
-
-### POST /scrape
-Scrapes data from the provided URL.
-
-**Request Payload:**
-```json
-{
-  "url": "https://example.com"
-}
+docker-compose up --build
 ```
 
-**Response:**
-```json
-{
-  "message": "Data scraped successfully"
-}
+This will build the Docker image and run both the web app and PostgreSQL database in separate containers.
+
+### 2. **Accessing the Application**
+
+Once the containers are up and running, access the application at:
+
+```
+http://localhost:5000
 ```
 
-### POST /generate
-Sends a prompt and receives a response generated by LangChain.
+### 3. **Database Migration**
 
-**Request Payload:**
-```json
-{
-  "prompt": "What's the weather like today?"
-}
+Before running the app, you need to initialize the database. You can do this by running the following in the Python shell after setting up the environment:
+
+```python
+from app import db
+db.create_all()
 ```
 
-**Response:**
-```json
-{
-  "generated_output": "Today's weather is sunny with a chance of rain."
-}
-```
+This command will create the necessary database tables for the `User`, `ScrapedData`, and `PromptLog` models.
 
-## Testing
-You can run unit tests for the application using `pytest`:
-```bash
-pytest
-```
+## Endpoints
+
+- **`/google`**: Initiates Google OAuth login.
+- **`/`**: Dashboard, accessible after login, shows scraped URLs, prompts, and logs.
+- **`/scrape`**: Endpoint to post a URL and scrape its content.
+- **`/scraped_data/edit/<id>`**: Edit a specific scraped data entry.
+- **`/scraped_data/delete/<id>`**: Delete a specific scraped data entry.
+- **`/prompt_log/edit/<id>`**: Edit a specific prompt log entry.
+- **`/prompt_log/delete/<id>`**: Delete a specific prompt log entry.
+
+## Frontend
+
+The frontend uses **Bootstrap** for a simple, responsive design. The dashboard displays the user's scraped data and prompts with options to edit or delete entries.
+
+### Dashboard Features
+
+- View a list of scraped data with metadata.
+- View a list of prompt logs and generated outputs.
+- Edit or delete scraped data and prompts.
+
+## Deployment
+
+### Docker Deployment
+
+The app is containerized using Docker. The following steps help in deploying the app in a production environment using Docker:
+
+1. **Build the Docker Image**:
+    ```bash
+    docker build -t flask-scraper .
+    ```
+
+2. **Run the Containers** using Docker Compose:
+    ```bash
+    docker-compose up --build
+    ```
+
+3. **Access the App**: The app will be available on `http://localhost:5000`.
+
+### Google OAuth Setup
+
+You need to set up OAuth credentials for Google login. To do this, go to the [Google Developer Console](https://console.developers.google.com/), create a new project, and enable the Google+ API. After that, set up OAuth 2.0 credentials for your app.
+
+- Use `http://localhost:5000/google` as the redirect URI.
+- Copy the `client_id` and `client_secret` and update them in the `.env` file.
+
+## Troubleshooting
+
+- **If the app doesn't start**: Ensure your `.env` file is correctly configured and the database is set up.
+- **Database errors**: Make sure the PostgreSQL container is running correctly. Check Docker logs for errors.
 
 ## License
-This project is licensed under the MIT License.
 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+---
+
+This README should help guide you through the setup and deployment of your web scraping Flask app with social login integration.
