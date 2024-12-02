@@ -21,6 +21,18 @@ This project is a web scraping Flask application that allows users to log in via
 - **PostgreSQL**: Database for storing user data and scraped content.
 - **Bootstrap**: For styling the frontend.
 
+### Key Libraries Used:
+1. **Flask**: Web framework for building the application.
+2. **Flask-SQLAlchemy**: ORM for database interaction, storing user and scraped data.
+3. **Flask-Dance (Google OAuth)**: Handles user authentication via Google social login.
+4. **Flask-Login**: Manages user sessions and authentication.
+5. **Requests & BeautifulSoup**: Used for scraping web content.
+6. **LangChain**: AI tool for processing natural language tasks.
+   - **OpenAI (GPT-3)**: LLM (Large Language Model) used for generating content.
+   - **ConversationChain**: For conversational agents.
+   - **Tool & AgentExecutor**: To automate web scraping, summarization, and content generation using LangChain.
+   - **PromptTemplate**: Creates prompts for GPT-3 to generate AI responses.
+
 ## Prerequisites
 
 Before running the app, make sure you have the following:
