@@ -30,7 +30,6 @@ This project is a web scraping Flask application that allows users to log in via
 6. **LangChain**: AI tool for processing natural language tasks.
    - **OpenAI (GPT-3)**: LLM (Large Language Model) used for generating content.
    - **ConversationChain**: For conversational agents.
-   - **Tool & AgentExecutor**: To automate web scraping, summarization, and content generation using LangChain.
    - **PromptTemplate**: Creates prompts for GPT-3 to generate AI responses.
 
 ## Prerequisites
