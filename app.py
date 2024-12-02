@@ -7,18 +7,18 @@ from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 
-# Initialize the Flask app and setup config
+# Initialize Flask app and set up config
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://localhost/yourdb')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')  # Secret key for session management
 db = SQLAlchemy(app)
 
 # Initialize Login Manager
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# Google OAuth Setup
+# Google OAuth Setup (Social Login)
 google_bp = make_google_blueprint(client_id=os.getenv('GOOGLE_CLIENT_ID'),
                                    client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
                                    redirect_to='google_login')
@@ -36,7 +36,7 @@ Write a brief summary for the following content:
 prompt = PromptTemplate(input_variables=["content"], template=prompt_template)
 chain = LLMChain(llm=llm, prompt=prompt)
 
-# Models for database
+# Database Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
@@ -65,39 +65,53 @@ class PromptLog(db.Model):
 def google_login():
     if not google.authorized:
         return redirect(url_for('google.login'))
+    
+    # Fetch user information from Google API
     user_info = google.get('/plus/v1/people/me')
     user = User.query.filter_by(email=user_info.json['emails'][0]['value']).first()
+    
     if user is None:
-        user = User(name=user_info.json['displayName'],
-                    email=user_info.json['emails'][0]['value'])
+        # Create new user if not in the database
+        user = User(
+            name=user_info.json['displayName'],
+            email=user_info.json['emails'][0]['value'],
+            profile_picture=user_info.json['image']['url']
+        )
         db.session.add(user)
         db.session.commit()
+
+    # Log the user in
     login_user(user)
     return redirect(url_for('dashboard'))
 
 @app.route('/')
 def dashboard():
     if current_user.is_authenticated:
+        # Fetch scraped data for the logged-in user
         scraped_data = ScrapedData.query.filter_by(created_by_user_id=current_user.id).all()
         return render_template('dashboard.html', scraped_data=scraped_data)
-    return redirect(url_for('google_login'))
+    return redirect(url_for('google.login'))
 
 @app.route('/scrape', methods=['POST'])
 def scrape_url():
     url = request.form['url']
-    # Logic for web scraping (assuming you scrape content and store it)
+    # Logic for web scraping (simplified)
     scraped_data = ScrapedData(url=url, content="Scraped Content", metadata={"title": "Title"})
     db.session.add(scraped_data)
     db.session.commit()
-    
-    # Use LangChain to generate a summary of the scraped content
+
+    # Use LangChain to summarize the scraped content
     generated_summary = chain.run(content=scraped_data.content)
 
-    # Save the prompt log
-    prompt_log = PromptLog(prompt_text=f"Summary for: {scraped_data.content}", generated_output=generated_summary, created_by_user_id=current_user.id)
+    # Log the prompt and generated output
+    prompt_log = PromptLog(
+        prompt_text=f"Summary for: {scraped_data.content}",
+        generated_output=generated_summary,
+        created_by_user_id=current_user.id
+    )
     db.session.add(prompt_log)
     db.session.commit()
-    
+
     return jsonify({'message': 'Data scraped and summarized successfully', 'summary': generated_summary})
 
 if __name__ == '__main__':
