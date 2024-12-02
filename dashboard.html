@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Dashboard</title>
+  <title>Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <h1 class="mt-5">Dashboard</h1>
-    
+    <h1 class="my-4">User Dashboard</h1>
+
     <h3>Scraped Data</h3>
     <table class="table">
       <thead>
@@ -17,6 +17,7 @@
           <th scope="col">#</th>
           <th scope="col">URL</th>
           <th scope="col">Content</th>
+          <th scope="col">Metadata</th>
           <th scope="col">Actions</th>
         </tr>
       </thead>
@@ -25,9 +26,11 @@
         <tr>
           <th scope="row">{{ data.id }}</th>
           <td>{{ data.url }}</td>
-          <td>{{ data.content }}</td>
+          <td>{{ data.content[:50] }}...</td>
+          <td>{{ data.metadata }}</td>
           <td>
-            <a href="#" class="btn btn-danger">Delete</a>
+            <a href="{{ url_for('edit_scraped_data', scraped_data_id=data.id) }}" class="btn btn-warning">Edit</a>
+            <a href="{{ url_for('delete_scraped_data', scraped_data_id=data.id) }}" class="btn btn-danger">Delete</a>
           </td>
         </tr>
         {% endfor %}
@@ -41,6 +44,7 @@
           <th scope="col">#</th>
           <th scope="col">Prompt</th>
           <th scope="col">Generated Output</th>
+          <th scope="col">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -48,7 +52,11 @@
         <tr>
           <th scope="row">{{ prompt.id }}</th>
           <td>{{ prompt.prompt_text }}</td>
-          <td>{{ prompt.generated_output }}</td>
+          <td>{{ prompt.generated_output[:50] }}...</td>
+          <td>
+            <a href="{{ url_for('edit_prompt_log', prompt_log_id=prompt.id) }}" class="btn btn-warning">Edit</a>
+            <a href="{{ url_for('delete_prompt_log', prompt_log_id=prompt.id) }}" class="btn btn-danger">Delete</a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
