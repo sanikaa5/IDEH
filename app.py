@@ -3,6 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_login import LoginManager, login_user, current_user
 import os
+from bs4 import BeautifulSoup  # Import for web scraping
+import requests  # Import for making HTTP requests
 
 # Initialize the Flask app and setup config
 app = Flask(__name__)
@@ -70,12 +72,31 @@ def dashboard():
 @app.route('/scrape', methods=['POST'])
 def scrape_url():
     url = request.form['url']
-    # Logic for web scraping
-    # Assume you scrape and save data in ScrapedData
-    scraped_data = ScrapedData(url=url, content="Scraped Content", metadata={"title": "Title"})
-    db.session.add(scraped_data)
-    db.session.commit()
-    return jsonify({'message': 'Data scraped successfully'})
+    try:
+        # Fetch the page content
+        response = requests.get(url)
+        response.raise_for_status()  # Check for HTTP request errors
+
+        # Parse the HTML content
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Extract data (e.g., title)
+        title = soup.title.string if soup.title else "No title found"
+        content = soup.get_text()  # Extract the text content of the page
+
+        # Save scraped data to the database
+        scraped_data = ScrapedData(
+            url=url,
+            content=content,
+            metadata={"title": title},
+            created_by_user_id=current_user.id if current_user.is_authenticated else None
+        )
+        db.session.add(scraped_data)
+        db.session.commit()
+
+        return jsonify({'message': 'Data scraped successfully', 'title': title})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
