@@ -151,4 +151,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-This README should help guide you through the setup and deployment of your web scraping Flask app with social login integration.
+
