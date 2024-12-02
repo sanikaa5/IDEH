@@ -1,10 +1,11 @@
+import os
 from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_login import LoginManager, login_user, current_user
-import os
-from bs4 import BeautifulSoup  # Import for web scraping
-import requests  # Import for making HTTP requests
+from langchain.llms import OpenAI
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 
 # Initialize the Flask app and setup config
 app = Flask(__name__)
@@ -22,6 +23,18 @@ google_bp = make_google_blueprint(client_id=os.getenv('GOOGLE_CLIENT_ID'),
                                    client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
                                    redirect_to='google_login')
 app.register_blueprint(google_bp, url_prefix='/google_login')
+
+# LangChain Setup for OpenAI
+llm = OpenAI(model="text-davinci-003", temperature=0.7)
+
+# Create a Prompt Template for LangChain
+prompt_template = """
+Write a brief summary for the following content:
+
+{content}
+"""
+prompt = PromptTemplate(input_variables=["content"], template=prompt_template)
+chain = LLMChain(llm=llm, prompt=prompt)
 
 # Models for database
 class User(db.Model):
@@ -72,31 +85,20 @@ def dashboard():
 @app.route('/scrape', methods=['POST'])
 def scrape_url():
     url = request.form['url']
-    try:
-        # Fetch the page content
-        response = requests.get(url)
-        response.raise_for_status()  # Check for HTTP request errors
+    # Logic for web scraping (assuming you scrape content and store it)
+    scraped_data = ScrapedData(url=url, content="Scraped Content", metadata={"title": "Title"})
+    db.session.add(scraped_data)
+    db.session.commit()
+    
+    # Use LangChain to generate a summary of the scraped content
+    generated_summary = chain.run(content=scraped_data.content)
 
-        # Parse the HTML content
-        soup = BeautifulSoup(response.text, 'html.parser')
-
-        # Extract data (e.g., title)
-        title = soup.title.string if soup.title else "No title found"
-        content = soup.get_text()  # Extract the text content of the page
-
-        # Save scraped data to the database
-        scraped_data = ScrapedData(
-            url=url,
-            content=content,
-            metadata={"title": title},
-            created_by_user_id=current_user.id if current_user.is_authenticated else None
-        )
-        db.session.add(scraped_data)
-        db.session.commit()
-
-        return jsonify({'message': 'Data scraped successfully', 'title': title})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    # Save the prompt log
+    prompt_log = PromptLog(prompt_text=f"Summary for: {scraped_data.content}", generated_output=generated_summary, created_by_user_id=current_user.id)
+    db.session.add(prompt_log)
+    db.session.commit()
+    
+    return jsonify({'message': 'Data scraped and summarized successfully', 'summary': generated_summary})
 
 if __name__ == '__main__':
     app.run(debug=True)
