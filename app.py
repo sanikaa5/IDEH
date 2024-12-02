@@ -7,8 +7,6 @@ import requests
 from bs4 import BeautifulSoup
 from langchain.chains import ConversationChain
 from langchain.llms import OpenAI
-from langchain.agents import initialize_agent
-from langchain.agents import Tool, AgentExecutor
 from langchain.prompts import PromptTemplate
 
 # Initialize the Flask app and setup config
